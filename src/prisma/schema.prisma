@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+//generator client {
+//  provider = "prisma-client"
+//  output   = "../generated/prisma"
+//}
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma" // В Prisma 7 путь генерации теперь ОБЯЗАТЕЛЕН
+  moduleFormat           = "cjs"
+  generatedFileExtension = "cts"
+  importFileExtension    = "cjs"
+}
+
+model Author {
+  id    Int    @id @default(autoincrement())
+  name  String
+  books Book[]
+}
+
+model Book {
+  id       Int    @id @default(autoincrement())
+  title    String
+  genre    String
+  authorId Int
+  author   Author @relation(fields: [authorId], references: [id])
+}
+
+// npx prisma migrate dev --name add_user_model
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+}

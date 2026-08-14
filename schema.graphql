@@ -1,0 +1,47 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  email: String!
+}
+
+type AuthPayloadDto {
+  token: String!
+  user: User!
+}
+
+type Book {
+  id: ID!
+  title: String!
+  genre: String!
+  authorId: Int!
+  author: Author!
+}
+
+type Author {
+  id: ID!
+  name: String!
+  books: [Book]!
+}
+
+type Query {
+  authors: [Author!]!
+  books: [Book!]!
+}
+
+type Mutation {
+  register(input: AuthInputDto!): AuthPayloadDto!
+  login(input: AuthInputDto!): AuthPayloadDto!
+  addBook(title: String!, genre: String!, authorId: Int!): Book!
+}
+
+input AuthInputDto {
+  email: String!
+  password: String!
+}
+
+type Subscription {
+  bookAdded: Book!
+}
