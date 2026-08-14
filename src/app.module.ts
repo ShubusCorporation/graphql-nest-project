@@ -14,7 +14,11 @@ import { BooksModule } from './books/books.module';
       autoSchemaFile: './schema.graphql', // Если  true, то схема .graphql будет генерироваться в памяти
       //playground: false, // ХАРДКОДОМ ОТКЛЮЧАЕМ СТАРЫЙ ИНТЕРФЕЙС
       subscriptions: {
-        'graphql-ws': true, // Включаем real-time подписки
+        // Modern clients (Apollo Sandbox, graphql-ws).
+        'graphql-ws': true,
+        // Compatibility with the legacy GraphQL Playground client.
+        // Migrate clients to `graphql-ws` and remove this setting when possible.
+        'subscriptions-transport-ws': true,
       },
       path: '/graphql',
       // Убедитесь, что контекст корректно обрабатывает соединения
