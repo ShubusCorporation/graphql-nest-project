@@ -1,9 +1,11 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
+  "moduleFileExtensions": ["js", "cjs", "json", "ts", "cts", "mts"],
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
+  "resolver": "<rootDir>/jest-resolver.cjs",
+  "setupFiles": ["dotenv/config"],
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.[cm]?[tj]s$": "ts-jest"
   }
 }
