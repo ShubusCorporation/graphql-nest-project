@@ -1,3 +1,4 @@
+import { gql } from './generated/gql'; // After `npx graphql-codegen` remove import from @graphql-typed-document-node/core
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -6,8 +7,18 @@ import WebSocket from 'ws';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { Server } from 'http';
+import { subscribeToGraphQL } from './utils/ws-helper';
 
+// npx graphql-codegen
 // npm run test:e2e
+
+const BOOK_ADDED_SUBSCRIPTION = gql(`
+  subscription OnBookAdded {
+    bookAdded {
+      title
+    }
+  }
+`);
 
 describe('GraphQL Performance & E2E Tests', () => {
   let app: INestApplication;
@@ -33,6 +44,8 @@ describe('GraphQL Performance & E2E Tests', () => {
     if (wsClient) {
       await wsClient.dispose();
     }
+    await prisma.$disconnect();
+    await httpServer.close();
     await app.close();
   });
 
@@ -62,33 +75,23 @@ describe('GraphQL Performance & E2E Tests', () => {
       webSocketImpl: WebSocket,
     });
 
-    let receivedData: unknown = null;
-
-    const unsubscribe = wsClient.subscribe(
-      { query: 'subscription { bookAdded { title } }' },
-      {
-        next: (data: unknown) => {
-          receivedData = data;
-        },
-        error: (err: unknown) => {
-          console.error(err);
-        },
-        complete: () => {},
-      },
-    );
-
-    // Даем сокету время на установку соединения
-    await new Promise((res) => setTimeout(res, 200));
-
-    // Вызываем HTTP мутацию, которая генерирует событие в PubSub
-    await request(httpServer).post('/graphql').send({
-      query: `mutation { addBook(title: "E2E Book", genre: "Testing", authorId: 1) { id title } }`,
+    // 2. Используем наш хелпер
+    const sub = subscribeToGraphQL({
+      client: wsClient,
+      query: BOOK_ADDED_SUBSCRIPTION,
     });
 
-    // Ожидаем прохождения события по WebSocket
     await new Promise((res) => setTimeout(res, 200));
 
-    expect(receivedData?.data?.bookAdded?.title).toBe('E2E Book');
-    unsubscribe();
+    await request(httpServer).post('/graphql').send({
+      query:
+        'mutation { addBook(title: "E2E Book", genre: "Testing", authorId: 1) { id title } }',
+    });
+
+    await new Promise((res) => setTimeout(res, 200));
+
+    // 3. IDE теперь знает, что тут есть bookAdded и title! Строгая типизация.
+    expect(sub.data?.bookAdded?.title).toBe('E2E Book');
+    sub.unsubscribe();
   });
 });
