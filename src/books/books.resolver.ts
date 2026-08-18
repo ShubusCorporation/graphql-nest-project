@@ -40,7 +40,7 @@ export class BooksResolver {
     const newBook = await this.prisma.book.create({
       data: { title, genre, authorId },
     });
-    pubSub.publish('bookAdded', { bookAdded: newBook }); // Публикуем событие
+    await pubSub.publish('bookAdded', { bookAdded: newBook }); // Публикуем событие
     return newBook;
   }
 }

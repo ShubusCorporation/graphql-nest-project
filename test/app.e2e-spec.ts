@@ -1,18 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { createClient } from 'graphql-ws';
+import { createClient, Client as WSClient } from 'graphql-ws';
 import WebSocket from 'ws';
 import { AppModule } from './../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { Server } from 'http';
 
 // npm run test:e2e
 
 describe('GraphQL Performance & E2E Tests', () => {
   let app: INestApplication;
-  let httpServer: any;
+  let httpServer: Server;
   let prisma: PrismaService;
-  let wsClient: any;
+  let wsClient: WSClient;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,7 +30,9 @@ describe('GraphQL Performance & E2E Tests', () => {
   });
 
   afterAll(async () => {
-    if (wsClient) wsClient.dispose();
+    if (wsClient) {
+      await wsClient.dispose();
+    }
     await app.close();
   });
 
@@ -40,7 +43,7 @@ describe('GraphQL Performance & E2E Tests', () => {
   // 1. ТЕСТ НА ОТСУТСТВИЕ N+1 ЗАПРОСОВ (ЧЕРЕЗ DATALOADER)
   it('should fetch authors and books WITHOUT N+1 problem (exactly 2 queries)', async () => {
     const response = await request(httpServer).post('/graphql').send({
-      query: `query { authors { name books { title } } }`,
+      query: 'query { authors { name books { title } } }',
     });
 
     expect(response.status).toBe(200);
@@ -59,15 +62,15 @@ describe('GraphQL Performance & E2E Tests', () => {
       webSocketImpl: WebSocket,
     });
 
-    let receivedData: any = null;
+    let receivedData: unknown = null;
 
     const unsubscribe = wsClient.subscribe(
       { query: 'subscription { bookAdded { title } }' },
       {
-        next: (data: any) => {
+        next: (data: unknown) => {
           receivedData = data;
         },
-        error: (err: any) => {
+        error: (err: unknown) => {
           console.error(err);
         },
         complete: () => {},
