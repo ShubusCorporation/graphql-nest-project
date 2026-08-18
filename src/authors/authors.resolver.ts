@@ -7,7 +7,10 @@ import { Author as GqlAuthor } from './models/author.model';
 import { Book as GqlBook } from '../books/models/book.model';
 
 // Импортируем Prisma-модели для типизации данных из БД
-import type { AuthorModel as PrismaAuthor, BookModel as PrismaBook } from '../generated/prisma/models.cjs';
+import type {
+  AuthorModel as PrismaAuthor,
+  BookModel as PrismaBook,
+} from '../generated/prisma/models.cjs';
 
 @Resolver(() => GqlAuthor)
 export class AuthorsResolver {
@@ -17,7 +20,7 @@ export class AuthorsResolver {
   ) {}
 
   // Получить всех авторов
-  @Query(() => [GqlAuthor]) 
+  @Query(() => [GqlAuthor])
   async authors(): Promise<PrismaAuthor[]> {
     return this.prisma.author.findMany();
   }

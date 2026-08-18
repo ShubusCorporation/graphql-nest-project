@@ -22,10 +22,10 @@ describe('GraphQL Performance & E2E Tests', () => {
     app = moduleFixture.createNestApplication();
     prisma = app.get(PrismaService);
     await app.init();
-    
+
     httpServer = app.getHttpServer();
     // Поднимаем сервер на тестовом порту для веб-сокетов
-    await app.listen(3001); 
+    await app.listen(3001);
   });
 
   afterAll(async () => {
@@ -39,15 +39,13 @@ describe('GraphQL Performance & E2E Tests', () => {
 
   // 1. ТЕСТ НА ОТСУТСТВИЕ N+1 ЗАПРОСОВ (ЧЕРЕЗ DATALOADER)
   it('should fetch authors and books WITHOUT N+1 problem (exactly 2 queries)', async () => {
-    const response = await request(httpServer)
-      .post('/graphql')
-      .send({
-        query: `query { authors { name books { title } } }`,
-      });
+    const response = await request(httpServer).post('/graphql').send({
+      query: `query { authors { name books { title } } }`,
+    });
 
     expect(response.status).toBe(200);
     expect(response.body.data.authors).toBeDefined();
-    
+
     // Благодаря DataLoader должно выполниться строго 2 SQL-запроса:
     // 1. SELECT * FROM "Author"
     // 2. SELECT * FROM "Book" WHERE "authorId" IN (...)
@@ -66,8 +64,12 @@ describe('GraphQL Performance & E2E Tests', () => {
     const unsubscribe = wsClient.subscribe(
       { query: 'subscription { bookAdded { title } }' },
       {
-        next: (data: any) => { receivedData = data; },
-        error: (err: any) => { console.error(err); },
+        next: (data: any) => {
+          receivedData = data;
+        },
+        error: (err: any) => {
+          console.error(err);
+        },
         complete: () => {},
       },
     );
@@ -76,11 +78,9 @@ describe('GraphQL Performance & E2E Tests', () => {
     await new Promise((res) => setTimeout(res, 200));
 
     // Вызываем HTTP мутацию, которая генерирует событие в PubSub
-    await request(httpServer)
-      .post('/graphql')
-      .send({
-        query: `mutation { addBook(title: "E2E Book", genre: "Testing", authorId: 1) { id title } }`,
-      });
+    await request(httpServer).post('/graphql').send({
+      query: `mutation { addBook(title: "E2E Book", genre: "Testing", authorId: 1) { id title } }`,
+    });
 
     // Ожидаем прохождения события по WebSocket
     await new Promise((res) => setTimeout(res, 200));

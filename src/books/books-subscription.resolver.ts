@@ -5,7 +5,7 @@ import { pubSub } from './books.signals'; // general pubsub
 @Resolver(() => GqlBook)
 export class BooksSubscriptionResolver {
   // Конструктор ПУСТОЙ — этот резолвер гарантированно статичен (Singleton)
-  
+
   @Subscription(() => GqlBook)
   bookAdded() {
     return pubSub.asyncIterableIterator(['bookAdded']);

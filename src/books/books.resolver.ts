@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, ResolveField, Parent, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  ResolveField,
+  Parent,
+  Args,
+  Int,
+} from '@nestjs/graphql';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthorsLoader } from '../authors/authors.loader';
 import { Book as GqlBook } from './models/book.model';
@@ -29,7 +37,9 @@ export class BooksResolver {
     @Args('genre') genre: string,
     @Args('authorId', { type: () => Int }) authorId: number,
   ): Promise<BookModel> {
-    const newBook = await this.prisma.book.create({ data: { title, genre, authorId } });
+    const newBook = await this.prisma.book.create({
+      data: { title, genre, authorId },
+    });
     pubSub.publish('bookAdded', { bookAdded: newBook }); // Публикуем событие
     return newBook;
   }

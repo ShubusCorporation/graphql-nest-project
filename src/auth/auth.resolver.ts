@@ -34,9 +34,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => AuthPayloadDto)
-  async login(
-    @Args('input') authInput: AuthInputDto,
-  ): Promise<AuthPayloadDto> {
+  async login(@Args('input') authInput: AuthInputDto): Promise<AuthPayloadDto> {
     return this.authService.login(authInput);
   }
 }

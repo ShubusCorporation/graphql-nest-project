@@ -12,21 +12,24 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-      throw new Error('DATABASE_URL must be set before starting the application.');
+      throw new Error(
+        'DATABASE_URL must be set before starting the application.',
+      );
     }
 
     // Передаем адаптер и динамически добавляем логирование для тестов
     super({
       adapter: new PrismaPg({ connectionString }),
-      log: process.env.NODE_ENV === 'test' 
-        ? [{ emit: 'event', level: 'query' } as const] 
-        : [],
+      log:
+        process.env.NODE_ENV === 'test'
+          ? [{ emit: 'event', level: 'query' } as const]
+          : [],
     });
   }
 
   async onModuleInit() {
     await this.$connect();
-    
+
     // Подписываемся на события перехвата SQL-запросов только в тестах
     if (this.isTestEnvironment) {
       // @ts-ignore

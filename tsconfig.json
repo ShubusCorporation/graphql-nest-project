@@ -20,6 +20,11 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    /*
+      Explicitly includes type definitions for Node.js global objects and Jest test runner 
+      (e.g., 'describe', 'it', 'expect') to resolve TypeScript errors in test files. 
+    */
+    "types": ["node", "jest"]
   }
 }

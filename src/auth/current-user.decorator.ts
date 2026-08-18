@@ -7,7 +7,7 @@ export const CurrentUser = createParamDecorator(
     // Достаем пользователя, которого туда бережно положил JwtStrategy
     const req = ctx.getContext().req;
     if (req?.user) return req.user;
-    
+
     // Если это WebSocket
     return ctx.getContext().connectionParams?.user;
   },

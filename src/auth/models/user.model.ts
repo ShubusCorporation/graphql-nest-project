@@ -7,6 +7,6 @@ export class User {
 
   @Field()
   email: string;
-  
+
   // Поле password мы здесь НЕ объявляем, чтобы случайно не слить хеш пароля на фронтенд!
 }
