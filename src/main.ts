@@ -7,6 +7,7 @@ async function bootstrap() {
   app.enableCors(); // Enable CORS for all sources.
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+
+bootstrap().catch((err) => console.error(err));
 
 // npm run start:dev

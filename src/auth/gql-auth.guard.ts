@@ -30,7 +30,7 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
   }
 
   // Кастомизируем ошибку, если пользователь не авторизован
-  handleRequest(err: any, user: any) {
+  handleRequest<TUser = unknown>(err: unknown, user: TUser): TUser {
     if (err || !user) {
       throw (
         err ||

@@ -32,7 +32,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
     // Подписываемся на события перехвата SQL-запросов только в тестах
     if (this.isTestEnvironment) {
-      // @ts-ignore
+      // @ts-expect-error PrismaClient does not know about extended logging events in the base types
       this.$on('query', () => {
         this.queryCount++;
       });
