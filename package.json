@@ -5,6 +5,17 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "lint-staged": {
+    "src/**/*.ts": [
+      "gts fix"
+    ],
+    "test/**/*.ts": [
+      "gts fix"
+    ],
+    "schema.graphql": [
+      "npm run codegen"
+    ]
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.{ts,json}\" \"test/**/*.{ts,json}\" \"*.{ts,js,json}\"",
@@ -24,7 +35,7 @@
     "check": "gts check \"src/**/*.ts\" \"test/**/*.ts\"",
     "fix": "gts fix \"src/**/*.ts\" \"test/**/*.ts\"",
     "compile": "tsc",
-    "prepare": "npm run compile",
+    "prepare": "husky",
     "pretest": "npm run compile",
     "posttest": "npm run lint"
   },
@@ -76,7 +87,9 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^17.0.0",
     "gts": "^7.0.0",
+    "husky": "^9.1.7",
     "jest": "^30.0.0",
+    "lint-staged": "^17.3.0",
     "prettier": "^3.4.2",
     "prisma": "^7.9.0",
     "source-map-support": "^0.5.21",
